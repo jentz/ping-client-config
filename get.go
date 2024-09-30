@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 type GetCommand struct {
@@ -45,25 +44,30 @@ func (c *GetCommand) Run() error {
 	if c.All {
 		clients, r, err := apiClient.OauthClientsAPI.GetOauthClients(apiCtx).Execute()
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("error getting clients: %v", err)
 		}
 
-		log.Printf("Found %d clients\n", len(clients.Items))
-		// loop through the clients
-		for _, c := range clients.Items {
-			log.Printf("%s - %s - %s\n", c.ClientId, c.Name, strconv.FormatBool(*c.Enabled))
+		var rps = createClients(clients.Items)
+		clientYaml, err := marshalClients(rps)
+		if err != nil {
+			return fmt.Errorf("error marshalling rp: %v", err)
 		}
-
+		log.Printf("\n%s\n", clientYaml)
 		log.Println(r.Status)
-		return nil
+	} else {
+		// get a single client
+		pingClient, r, err := apiClient.OauthClientsAPI.GetOauthClientById(apiCtx, c.ClientID).Execute()
+		if err != nil {
+			return fmt.Errorf("error getting client %s: %v", c.ClientID, err)
+		}
+		rp := createClient(*pingClient)
+		clientYaml, err := rp.Marshal()
+		if err != nil {
+			return fmt.Errorf("error marshalling rp: %v", err)
+		}
+		log.Printf("\n%s\n", clientYaml)
+		log.Println(r.Status)
 	}
 
-	// get a single client
-	client, r, err := apiClient.OauthClientsAPI.GetOauthClientById(apiCtx, c.ClientID).Execute()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("%s - %s - %s\n", client.ClientId, client.Name, strconv.FormatBool(*client.Enabled))
-	log.Println(r.Status)
 	return nil
 }
