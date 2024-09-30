@@ -14,25 +14,27 @@ func parseGetFlags(name string, args []string) (config CommandRunner, output str
 	flags.SetOutput(&buf)
 
 	runner := &pcc.GetCommand{}
-	// if the environment variable is set, use it as the default
-	defaultUsername := ""
-	if username, ok := os.LookupEnv("PINGFEDERATE_USERNAME"); ok {
-		defaultUsername = username
-	}
-
-	defaultPassword := ""
-	if password, ok := os.LookupEnv("PINGFEDERATE_PASSWORD"); ok {
-		defaultPassword = password
-	}
 
 	flags.StringVar(&runner.AdminURL, "admin-url", "", "set admin url (required)")
-	flags.StringVar(&runner.Username, "username", defaultUsername, "set username (required)")
-	flags.StringVar(&runner.Password, "password", defaultPassword, "set password (required)")
+	flags.StringVar(&runner.Username, "username", "", "set username (required)")
+	flags.StringVar(&runner.Password, "password", "", "set password (required)")
 	flags.StringVar(&runner.ClientID, "client-id", "", "set client ID")
 
 	err = flags.Parse(args)
 	if err != nil {
 		return nil, buf.String(), err
+	}
+
+	// if the environment variable is set, use it as the default
+	if runner.Username == "" {
+		if username, ok := os.LookupEnv("PINGFEDERATE_USERNAME"); ok {
+			runner.Username = username
+		}
+	}
+	if runner.Password == "" {
+		if password, ok := os.LookupEnv("PINGFEDERATE_PASSWORD"); ok {
+			runner.Password = password
+		}
 	}
 
 	if runner.ClientID == "" {
