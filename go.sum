@@ -1,0 +1,6 @@
+github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
+github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+github.com/pingidentity/pingfederate-go-client/v1210 v1210.0.3 h1:KY6GmIfOJB5Nc3fX/f66fsWnPt1Fc0+QqQIbvAsyYkM=
+github.com/pingidentity/pingfederate-go-client/v1210 v1210.0.3/go.mod h1:6FV76bV3LF98Rn1Q62RRxcPk1XqRzRNcI6PeFe9MNbk=
+golang.org/x/oauth2 v0.20.0 h1:4mQdhULixXKP1rwYBW0vAijoXnkTG0BLCDRzfe1idMo=
+golang.org/x/oauth2 v0.20.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
