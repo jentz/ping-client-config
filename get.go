@@ -3,10 +3,8 @@ package pcc
 import (
 	"context"
 	"fmt"
-	client "github.com/pingidentity/pingfederate-go-client/v1210/configurationapi"
+	"github.com/jentz/ping-client-config/internal/adminapi"
 	"log"
-	"net/http"
-	"os"
 )
 
 type GetCommand struct {
@@ -20,29 +18,16 @@ type GetCommand struct {
 
 func (c *GetCommand) Run() error {
 	ctx := context.Background()
-	clientConfig := client.NewConfiguration()
-	clientConfig.DefaultHeader["X-Xsrf-Header"] = "PingFederate"
-	//clientConfig.DefaultHeader["X-BypassExternalValidation"] = strconv.FormatBool(xBypassExternalValidation)
-	clientConfig.Servers = client.ServerConfigurations{
-		{
-			URL: c.AdminURL,
-		},
-	}
-	httpClient := http.DefaultClient
-	clientConfig.HTTPClient = httpClient
-	userAgentSuffix := fmt.Sprintf("pfclientconf/%s %s", "v1210", "go")
-	clientConfig.UserAgentSuffix = &userAgentSuffix
-	apiClient := client.NewAPIClient(clientConfig)
+	cfg := adminapi.NewConfig().WithEndpointURL(c.AdminURL).
+		WithUsername(c.Username).WithPassword(c.Password)
 
-	apiCtx := context.WithValue(ctx, client.ContextBasicAuth, client.BasicAuth{
-		UserName: os.Getenv("PINGFEDERATE_USERNAME"),
-		Password: os.Getenv("PINGFEDERATE_PASSWORD"),
-	})
+	adminClient := adminapi.NewAdminClient(cfg)
+	ctx = adminapi.AuthContext(ctx, *cfg)
 
 	log.Printf("ping admin host %s\n", c.AdminURL)
 
 	if c.All {
-		clients, r, err := apiClient.OauthClientsAPI.GetOauthClients(apiCtx).Execute()
+		clients, r, err := adminClient.OauthClientsAPI.GetOauthClients(ctx).Execute()
 		if err != nil {
 			return fmt.Errorf("error getting clients: %v", err)
 		}
@@ -56,7 +41,7 @@ func (c *GetCommand) Run() error {
 		log.Println(r.Status)
 	} else {
 		// get a single client
-		pingClient, r, err := apiClient.OauthClientsAPI.GetOauthClientById(apiCtx, c.ClientID).Execute()
+		pingClient, r, err := adminClient.OauthClientsAPI.GetOauthClientById(ctx, c.ClientID).Execute()
 		if err != nil {
 			return fmt.Errorf("error getting client %s: %v", c.ClientID, err)
 		}
