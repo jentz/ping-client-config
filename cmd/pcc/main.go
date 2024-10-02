@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -9,7 +10,7 @@ import (
 )
 
 type CommandRunner interface {
-	Run() error
+	Run(ctx context.Context) error
 }
 
 type Command struct {
@@ -66,7 +67,9 @@ func runCommand(name string, args []string) {
 		fmt.Println("output:\n", output)
 		os.Exit(1)
 	}
-	if err := command.Run(); err != nil {
+
+	ctx := context.Background()
+	if err := command.Run(ctx); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v", err.Error())
 		os.Exit(1)
 	}

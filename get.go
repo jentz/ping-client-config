@@ -16,8 +16,7 @@ type GetCommand struct {
 	ClientID string
 }
 
-func (c *GetCommand) Run() error {
-	ctx := context.Background()
+func (c *GetCommand) Run(ctx context.Context) error {
 	cfg := adminapi.NewConfig().WithEndpointURL(c.AdminURL).
 		WithUsername(c.Username).WithPassword(c.Password)
 
