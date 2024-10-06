@@ -75,6 +75,12 @@ func (c *ApplyCommand) Run(ctx context.Context) error {
 	if pccManagedString != "true" {
 		return fmt.Errorf("client %s is not managed by pcc", client.ClientId)
 	}
+	clientFromConfig := clientFromClientConfig(clientIn)
+	clientFromConfig.ClientAuth = client.ClientAuth
+	_, r, err = adminClient.OauthClientsAPI.UpdateOauthClient(ctx, client.ClientId).Body(*clientFromConfig).Execute()
+	if err != nil {
+		return fmt.Errorf("error updating client %s: %v", client.ClientId, err)
+	}
 
 	return nil
 }
