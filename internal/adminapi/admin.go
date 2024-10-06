@@ -3,7 +3,7 @@ package adminapi
 import (
 	"context"
 	"fmt"
-	client "github.com/pingidentity/pingfederate-go-client/v1210/configurationapi"
+	pfclient "github.com/pingidentity/pingfederate-go-client/v1210/configurationapi"
 	"net/http"
 )
 
@@ -21,7 +21,7 @@ func AuthContext(ctx context.Context, config Config) context.Context {
 
 // BasicAuthContext Get BasicAuth context with a username and password
 func BasicAuthContext(ctx context.Context, username, password string) context.Context {
-	return context.WithValue(ctx, client.ContextBasicAuth, client.BasicAuth{
+	return context.WithValue(ctx, pfclient.ContextBasicAuth, pfclient.BasicAuth{
 		UserName: username,
 		Password: password,
 	})
@@ -58,20 +58,20 @@ func (c *Config) WithHTTPClient(httpClient *http.Client) *Config {
 	return c
 }
 
-func newConfiguration(config *Config) *client.Configuration {
-	clientConfig := client.NewConfiguration()
+func newConfiguration(config *Config) *pfclient.Configuration {
+	clientConfig := pfclient.NewConfiguration()
 	clientConfig.DefaultHeader["X-Xsrf-Header"] = "PingFederate"
-	clientConfig.Servers = client.ServerConfigurations{
+	clientConfig.Servers = pfclient.ServerConfigurations{
 		{
 			URL: config.EndpointURL,
 		},
 	}
 	clientConfig.HTTPClient = config.HttpClient
-	userAgentSuffix := fmt.Sprintf("pfclientconf/%s %s", "v1210", "go")
+	userAgentSuffix := fmt.Sprintf("ping-client-config/%s %s", "v1210", "go")
 	clientConfig.UserAgentSuffix = &userAgentSuffix
 	return clientConfig
 }
 
-func NewAdminClient(config *Config) *client.APIClient {
-	return client.NewAPIClient(newConfiguration(config))
+func NewAdminClient(config *Config) *pfclient.APIClient {
+	return pfclient.NewAPIClient(newConfiguration(config))
 }

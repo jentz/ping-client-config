@@ -5,24 +5,29 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Client struct {
-	ClientID     string   `yaml:"client_id"`
-	Name         string   `yaml:"name"`
-	Description  *string  `yaml:"description,omitempty"`
-	RedirectURIs []string `yaml:"redirect_uris,omitempty"`
-	GrantTypes   []string `yaml:"grant_types,omitempty"`
+type ClientConfig struct {
+	ClientID                    string   `yaml:"client_id"`
+	Name                        string   `yaml:"name"`
+	Description                 *string  `yaml:"description,omitempty"`
+	RedirectURIs                []string `yaml:"redirect_uris,omitempty"`
+	GrantTypes                  []string `yaml:"grant_types,omitempty"`
+	OIDCPolicyID                string   `yaml:"oidc_policy_id,omitempty"`
+	DefaultAccessTokenManagerID string   `yaml:"default_access_token_manager_id,omitempty"`
+	RequirePKCE                 bool     `yaml:"require_pkce,omitempty"`
+	BypassApprovalPage          bool     `yaml:"bypass_approval_page,omitempty"`
+	SSOEnabled                  bool     `yaml:"sso_enabled,omitempty"`
 }
 
-func marshalClient(c *Client) ([]byte, error) {
+func marshalClientConfig(c *ClientConfig) ([]byte, error) {
 	return yaml.Marshal(c)
 }
 
-func marshalClients(c []Client) ([]byte, error) {
+func marshalClientConfigs(c []ClientConfig) ([]byte, error) {
 	return yaml.Marshal(c)
 }
 
-func createClient(pingClient client.Client) Client {
-	return Client{
+func createClientConfig(pingClient client.Client) ClientConfig {
+	return ClientConfig{
 		ClientID:     pingClient.ClientId,
 		Name:         pingClient.Name,
 		Description:  pingClient.Description,
@@ -31,14 +36,23 @@ func createClient(pingClient client.Client) Client {
 	}
 }
 
-func createClients(pingClients []client.Client) []Client {
-	var clients []Client
+func createClientConfigs(pingClients []client.Client) []ClientConfig {
+	var clients []ClientConfig
 	for _, c := range pingClients {
-		clients = append(clients, createClient(c))
+		clients = append(clients, createClientConfig(c))
 	}
 	return clients
 }
 
-func (c *Client) Marshal() ([]byte, error) {
-	return marshalClient(c)
+func (c *ClientConfig) Marshal() ([]byte, error) {
+	return marshalClientConfig(c)
+}
+
+func unmarshalClientConfig(data []byte) (*ClientConfig, error) {
+	var c ClientConfig
+	err := yaml.Unmarshal(data, &c)
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }

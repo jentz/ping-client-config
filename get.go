@@ -31,8 +31,8 @@ func (c *GetCommand) Run(ctx context.Context) error {
 			return fmt.Errorf("error getting clients: %v", err)
 		}
 
-		var rps = createClients(clients.Items)
-		clientYaml, err := marshalClients(rps)
+		var rps = createClientConfigs(clients.Items)
+		clientYaml, err := marshalClientConfigs(rps)
 		if err != nil {
 			return fmt.Errorf("error marshalling rp: %v", err)
 		}
@@ -44,7 +44,7 @@ func (c *GetCommand) Run(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("error getting client %s: %v", c.ClientID, err)
 		}
-		rp := createClient(*pingClient)
+		rp := createClientConfig(*pingClient)
 		clientYaml, err := rp.Marshal()
 		if err != nil {
 			return fmt.Errorf("error marshalling rp: %v", err)

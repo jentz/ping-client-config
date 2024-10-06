@@ -1,0 +1,13 @@
+client_id: ac_pkce
+name: test client pkce
+description: test client creation
+redirect_uris:
+  - http://localhost:9555/callback
+grant_types:
+  - AUTHORIZATION_CODE
+  - REFRESH_TOKEN
+require_pkce: true
+bypass_approval_page: false
+sso_enabled: true
+oidc_policy_id: jwtshort
+default_access_token_manager_id: jwtshort

@@ -21,6 +21,7 @@ type Command struct {
 
 var commands = []Command{
 	{Name: "get", Help: "Gets the client configs, either all of them or one", Configure: parseGetFlags},
+	{Name: "apply", Help: "Applies a client config", Configure: parseApplyFlags},
 	{Name: "help", Help: "Prints help"},
 }
 
