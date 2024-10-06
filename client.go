@@ -1,6 +1,7 @@
 package pcc
 
 import (
+	"github.com/jentz/ping-client-config/internal/adminapi"
 	client "github.com/pingidentity/pingfederate-go-client/v1210/configurationapi"
 	"gopkg.in/yaml.v3"
 )
@@ -28,11 +29,16 @@ func marshalClientConfigs(c []ClientConfig) ([]byte, error) {
 
 func createClientConfig(pingClient client.Client) ClientConfig {
 	return ClientConfig{
-		ClientID:     pingClient.ClientId,
-		Name:         pingClient.Name,
-		Description:  pingClient.Description,
-		RedirectURIs: pingClient.RedirectUris,
-		GrantTypes:   pingClient.GrantTypes,
+		ClientID:                    pingClient.ClientId,
+		Name:                        pingClient.Name,
+		Description:                 pingClient.Description,
+		RedirectURIs:                pingClient.RedirectUris,
+		GrantTypes:                  pingClient.GrantTypes,
+		OIDCPolicyID:                pingClient.OidcPolicy.PolicyGroup.GetId(),
+		DefaultAccessTokenManagerID: pingClient.DefaultAccessTokenManagerRef.GetId(),
+		RequirePKCE:                 *pingClient.RequireProofKeyForCodeExchange,
+		BypassApprovalPage:          *pingClient.BypassApprovalPage,
+		SSOEnabled:                  adminapi.GetSingleExtendedParameterValue(pingClient.ExtendedParameters, "adapter_type", "") == "sso",
 	}
 }
 
