@@ -15,6 +15,8 @@ type ClientConfig struct {
 	OIDCPolicyID                string   `yaml:"oidc_policy_id,omitempty"`
 	DefaultAccessTokenManagerID string   `yaml:"default_access_token_manager_id,omitempty"`
 	RequirePKCE                 bool     `yaml:"require_pkce,omitempty"`
+	RestrictedScopes            []string `yaml:"restricted_scopes,omitempty"`
+	ExclusiveScopes             []string `yaml:"exclusive_scopes,omitempty"`
 	BypassApprovalPage          bool     `yaml:"bypass_approval_page,omitempty"`
 	SSOEnabled                  bool     `yaml:"sso_enabled,omitempty"`
 }
@@ -37,6 +39,8 @@ func createClientConfig(pingClient client.Client) ClientConfig {
 		OIDCPolicyID:                pingClient.OidcPolicy.PolicyGroup.GetId(),
 		DefaultAccessTokenManagerID: pingClient.DefaultAccessTokenManagerRef.GetId(),
 		RequirePKCE:                 *pingClient.RequireProofKeyForCodeExchange,
+		RestrictedScopes:            pingClient.RestrictedScopes,
+		ExclusiveScopes:             pingClient.ExclusiveScopes,
 		BypassApprovalPage:          *pingClient.BypassApprovalPage,
 		SSOEnabled:                  adminapi.GetSingleExtendedParameterValue(pingClient.ExtendedParameters, "adapter_type", "") == "sso",
 	}
