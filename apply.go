@@ -2,6 +2,7 @@ package pcc
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/jentz/ping-client-config/internal/adminapi"
 	pfclient "github.com/pingidentity/pingfederate-go-client/v1210/configurationapi"
@@ -61,6 +62,11 @@ func (c *ApplyCommand) Run(ctx context.Context) error {
 		client = clientFromClientConfig(clientIn)
 		_, r, err = adminClient.OauthClientsAPI.CreateOauthClient(ctx).Body(*client).Execute()
 		if err != nil {
+			var apiErr *pfclient.GenericOpenAPIError
+			if errors.As(err, &apiErr) {
+				return fmt.Errorf("error creating client %s: %v", clientIn.ClientID, string(apiErr.Body()))
+
+			}
 			return fmt.Errorf("error creating client %s: %v", clientIn.ClientID, err)
 		}
 
