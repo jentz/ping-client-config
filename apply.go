@@ -54,7 +54,7 @@ func (c *ApplyCommand) Run(ctx context.Context) error {
 
 	client, r, err := adminClient.OauthClientsAPI.GetOauthClientById(ctx, clientIn.ClientID).Execute()
 	if err != nil {
-		if r.StatusCode != http.StatusNotFound {
+		if r == nil || r.StatusCode != http.StatusNotFound {
 			return fmt.Errorf("error getting client %s: %v", clientIn.ClientID, err)
 		}
 		// create the client
